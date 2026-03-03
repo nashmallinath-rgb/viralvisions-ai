@@ -1,0 +1,33 @@
+# ViralVisions AI - Global Config
+
+model:
+  visual:
+    backbone: resnet101
+    pretrained: true
+    feature_dim: 2048
+  text:
+    backbone: bert-base-uncased
+    max_length: 128
+    feature_dim: 768
+  fusion:
+    method: cross_modal_attention
+    hidden_dim: 512
+    num_heads: 8
+  baseline:
+    model: xgboost
+    n_estimators: 100
+
+training:
+  batch_size: 32
+  learning_rate: 1e-4
+  epochs: 50
+  optimizer: adamw
+  scheduler: cosine
+
+evaluation:
+  metrics: [mae, r2, srcc]
+
+paths:
+  data: data/
+  checkpoints: results/checkpoints/
+  logs: results/logs/
