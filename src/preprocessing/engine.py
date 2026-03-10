@@ -16,15 +16,15 @@ class ViralPreprocessor:
         ])
 
     def _clean_text(self, text):
-        # Demojize: 🚀 -> :rocket:
+        # Handle potential NaN/float values in CSV
+        text = str(text) if text else ""
         text = emoji.demojize(text, delimiters=(" ", " "))
-        # Basic cleanup while keeping high-signal symbols
         text = re.sub(r"[^a-zA-Z0-9#@\s:]", "", text)
         return " ".join(text.split()).lower()
 
     def process_text(self, text):
         cleaned = self._clean_text(text)
-        encoding = self.tokenizer.encode_plus(
+        encoding = self.tokenizer(
             cleaned, add_special_tokens=True, max_length=self.max_len,
             padding='max_length', truncation=True, return_attention_mask=True, return_tensors='pt'
         )
@@ -32,7 +32,15 @@ class ViralPreprocessor:
 
     def process_image(self, image_path):
         try:
-            img = Image.open(image_path).convert('RGB')
-            return self.img_transform(img)
-        except Exception:
+            # Check if file exists before opening
+            with Image.open(image_path) as img:
+                return self.img_transform(img.convert('RGB'))
+        except Exception as e:
+            # Return a zero tensor if image is missing/corrupt
             return torch.zeros(3, 224, 224)
+
+    def __call__(self, image_path, caption):
+        return {
+            "image_tensor": self.process_image(image_path),
+            "text_tensors": self.process_text(caption)
+        }
