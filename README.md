@@ -90,8 +90,8 @@ Stored on the `datasets` branch. See that branch's README for download instructi
 | Phase | Dates | Status |
 |-------|-------|--------|
 | Phase 1 - Idea Finalization | Completed | Done |
-| Phase 2 - System Design | Mar 3 | In Progress |
-| Phase 3 - Initial Implementation | Mar 7 - Apr 3 | Pending |
+| Phase 2 - System Design | Mar 3 | Done |
+| Phase 3 - Initial Implementation | Mar 7 - Apr 3 | In Progress |
 | Phase 4 - Core Development | Apr 11 - Apr 22 | Pending |
 | Phase 5 - Testing | Apr 25 - May 6 | Pending |
 | Final Demo | May 14-15 | Pending |
