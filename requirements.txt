@@ -1,32 +1,8 @@
-# Deep Learning
 torch>=2.0.0
-torchvision>=0.15.0
-transformers>=4.30.0
-
-# Visual Module
-Pillow>=9.0.0
-opencv-python>=4.7.0
-
-# Baseline
-xgboost>=1.7.0
-scikit-learn>=1.2.0
-
-# RAG
-faiss-cpu>=1.7.4
-sentence-transformers>=2.2.0
-
-# Data
-numpy>=1.24.0
-pandas>=2.0.0
-
-# Evaluation
-scipy>=1.10.0
-
-# App
-streamlit>=1.25.0
-fastapi>=0.100.0
-uvicorn>=0.23.0
-
-# Utilities
-tqdm>=4.65.0
-wandb>=0.15.0
+torchvision
+transformers
+emoji
+pandas
+pillow
+scikit-learn
+tqdm
