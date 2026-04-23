@@ -95,3 +95,56 @@ Stored on the `datasets` branch. See that branch's README for download instructi
 | Phase 4 - Core Development | Apr 11 - Apr 22 | Pending |
 | Phase 5 - Testing | Apr 25 - May 6 | Pending |
 | Final Demo | May 14-15 | Pending |
+
+---
+
+## ⚙️ Setup & Running the Server
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/nashmallinath-rgb/viralvisions-ai.git
+cd viralvisions-ai
+```
+
+### 2. Install Dependencies
+```bash
+pip install fastapi uvicorn python-multipart faiss-cpu torch torchvision transformers groq pillow
+```
+
+### 3. Set Your Groq API Key
+Get a free key at https://console.groq.com — then set it as an environment variable:
+```bash
+export GROK_KEY=your_groq_api_key_here
+```
+> In Google Colab: add `GROK_KEY` to Colab Secrets (key icon in left sidebar)
+
+### 4. Start the FastAPI Server
+```bash
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+### 5. Test the Endpoints
+
+Health check:
+```bash
+curl http://localhost:8000/health
+```
+
+Predict virality:
+```bash
+curl -X POST http://localhost:8000/predict \
+  -F "caption=Golden hour vibes #sunset #travel" \
+  -F "image=@your_image.jpg"
+```
+
+Expected response:
+```json
+{
+  "score": 72.4,
+  "label": "HIGH",
+  "advisory": "Virality Verdict... Actionable Improvements... Best Time to Post...",
+  "embed_dim": 512
+}
+```
+
+> Note: If the FAISS knowledge bank is not yet built, the server runs with an empty bank and returns rule-based advisory fallback. Full advisory requires training on SMPD dataset.
