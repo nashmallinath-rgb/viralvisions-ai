@@ -79,7 +79,7 @@ HF_TOKEN          = os.environ.get('HF_TOKEN', '')
 # HYPERPARAMETERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-EPOCHS       = 10
+EPOCHS       = 3
 BATCH_SIZE   = 32
 LR           = 3e-4
 MAX_LEN      = 128
