@@ -104,6 +104,70 @@ class ViralKnowledgeBank:
             "and open with a strong hook in the first line of your caption."
         )
 
+
+    def refresh_from_instagram(self, session_cookies: dict, hashtags: list,
+                                posts_per_tag: int = 20, text_encoder=None,
+                                device: str = 'cpu') -> int:
+        import instaloader
+        import numpy as np
+        from src.preprocessing.engine import ViralPreprocessor
+
+        L = instaloader.Instaloader()
+        L.context._session.cookies.set('sessionid', session_cookies['sessionid'], domain='.instagram.com')
+        L.context._session.cookies.set('csrftoken', session_cookies['csrftoken'], domain='.instagram.com')
+        L.context.username = session_cookies.get('username', '')
+        prep = ViralPreprocessor(bert_model='bert-base-uncased', max_len=128)
+        all_embeddings, all_metadata = [], []
+
+        # Instagram hashtag API broken in instaloader 4.15.1
+        # Using public profile posts instead
+        popular_accounts = ['natgeo', '9gag', 'humansofny', 'nike', 'nasa']
+
+        for account in popular_accounts:
+            print(f"Fetching @{account}...")
+            count = 0
+            try:
+                profile = instaloader.Profile.from_username(L.context, account)
+                for post in profile.get_posts():
+                    if count >= posts_per_tag:
+                        break
+                    try:
+                        caption  = post.caption or ''
+                        likes    = post.likes or 0
+                        comments = post.comments or 0
+                        score    = likes / (likes + comments + 1)
+                        if text_encoder:
+                            import torch
+                            text_proj = torch.nn.Linear(768, 512, bias=False).to(device)
+                            td   = prep.process_text(caption)
+                            ids  = td['input_ids'].unsqueeze(0).to(device)
+                            mask = td['attention_mask'].unsqueeze(0).to(device)
+                            with torch.no_grad():
+                                emb = text_proj(text_encoder(ids, mask)).squeeze(0).cpu().numpy()
+                        else:
+                            emb = np.random.randn(self.embed_dim).astype(np.float32)
+                        all_embeddings.append(emb)
+                        all_metadata.append({
+                            'post_id':    post.shortcode,
+                            'caption':    caption,
+                            'score':      float(score),
+                            'post_type':  'video' if post.is_video else 'image',
+                            'source':     f'instagram_{account}',
+                            'indexed_at': datetime.now(timezone.utc).isoformat()
+                        })
+                        count += 1
+                        print(f"  [{count}] Likes:{likes} | {caption[:50]}")
+                    except Exception:
+                        continue
+            except Exception as e:
+                print(f"  Failed @{account}: {e}")
+                continue
+
+        if all_embeddings:
+            self._add(np.stack(all_embeddings, 0), all_metadata)
+        print(f"Added {len(all_embeddings)} Instagram posts")
+        return len(all_embeddings)
+
     def save(self, path: str) -> None:
         faiss.write_index(self.index, f"{path}.index")
         with open(f"{path}_metadata.pkl", 'wb') as f:
