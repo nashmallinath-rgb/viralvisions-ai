@@ -121,8 +121,12 @@ class ViralKnowledgeBank:
 
         # Instagram hashtag API broken in instaloader 4.15.1
         # Using public profile posts instead
-        popular_accounts = ['natgeo', '9gag', 'humansofny', 'nike', 'nasa']
-
+        
+        popular_accounts = [
+            'virat.kohli', 'rohitsharma45', 'hardikpandya93',
+            'iplt20', 'bcci', 'royalchallengersbengaluru',
+            'bollywood', 'priyankachopra', 'deepikapadukone'
+        ]
         for account in popular_accounts:
             print(f"Fetching @{account}...")
             count = 0
